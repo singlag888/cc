@@ -678,34 +678,7 @@ class RunController extends BaseController
             $this->display();
         }
     }
-public  function ok(){
 
-    $map=Array
-    (
-        "userid" => 4,
-        "type" => 2,
-        "state" => 1,
-        "is_add" => 0,
-        "is_under" => 1,
-        "time" => 1543288549,
-        "number" => 916294,
-        "jincai" => "灏忓崟1003",
-        "del_points" => 1003,
-        "balance" => 68223,
-        "nickname" => "ceshi666",
-        "username" => "ceshi666",
-        "game" => "bj28",
-        "t_id" => 0,
-        "room" => "bj28b",
-    );
-
-    $return = M('order')->add($map);
-
-
-    print_r($return);
-
-
-}
     public function jnd28()
     {
         if (C('is_open') == 0) {
@@ -810,6 +783,118 @@ public  function ok(){
 
         $this->assign('list', $list);
         $this->assign('type', $type);
+        $this->assign('options', $options);
+        if (C('index_page') == '1') {
+            $this->display("jnd28_1");
+        } else {
+            $this->display();
+        }
+    }
+    public function jnd28b()
+    {
+        if (C('is_open') == 0) {
+            $this->redirect('error');
+        }
+
+        $auth = auth_check(C('auth_code'), $_SERVER['HTTP_HOST']);
+        if (! $auth) {
+            echo "未授权或授权已过期";
+            exit();
+        }
+
+        // 10期结果
+        $list = M('number')->where("game='jnd28'")
+            ->order("id DESC")
+            ->limit(10)
+            ->select();
+
+        // 创建SDK实例
+        $script = &  load_wechat('Script');
+        // 获取JsApi使用签名，通常这里只需要传 $ur l参数
+        $url = 'http://' . $_SERVER['SERVER_NAME'] . '/Home/Run/index.html';
+        $options = $script->getJsSign($url, $timestamp, $noncestr, $appid);
+
+        // 判断赛车和飞艇的类型
+        $kefu = M('config')->where("id = 1")->find();
+
+        $is_weixin = is_weixin();
+
+        $userinfo = session('user');
+        $map['state'] = 1;
+        $map['userid'] = $userinfo['id'];
+        $order = M('order');
+        $points_tj = $order->field("count(id) as count,sum(add_points) as sum_add,sum(del_points) as sum_del")
+            ->where($map)
+            ->find();
+        $points_tj['ying'] = $points_tj['sum_add'] - $points_tj['sum_del'];
+        $this->assign('points_tj', $points_tj);
+
+
+        foreach ($list as $key => $value) {
+            $current_number = $value;
+            $number1 = explode(',', $current_number['awardnumbers']);
+
+            $numberOne = $number1[0];
+            $numberTwo = $number1[1];
+            $numberThree = $number1[2];
+
+            $tema_number = $numberOne + $numberTwo + $numberThree;
+            $current_number[numberOne] = $numberOne;
+            $current_number[numberTwo] = $numberTwo;
+            $current_number[numberThree] = $numberThree;
+
+            if ($tema_number <= 13) {
+                if ($tema_number % 2 == 0) {
+                    $current_number['zuhe'] = '小双';
+                } else {
+                    $current_number['zuhe'] = '小单';
+                }
+            } else {
+                if ($tema_number % 2 == 0) {
+                    $current_number['zuhe'] = '大双';
+                } else {
+                    $current_number['zuhe'] = '大单';
+                }
+            }
+            if ($numberOne > $numberTwo) {
+                $current_number['zx'] = '庄';
+            } elseif ($numberOne == $numberTwo) {
+                $current_number['zx'] = '和';
+            } else {
+                $current_number['zx'] = '闲';
+            }
+            $current_number['q3'] = bj28_qzh(array(
+                $numberOne,
+                $numberTwo,
+                $numberThree
+            ));
+
+            if ($tema_number >= 0 && $tema_number <= 5) {
+                $current_number['jdx'] = '极小';
+            } else
+                if ($tema_number >= 22 && $tema_number <= 27) {
+                    $current_number['jdx'] = '极大';
+                } else {
+                    $current_number['jdx'] = '';
+                }
+            $kjlist[$key] = $current_number;
+        }
+
+        $this->assign('kjlist', $kjlist);
+
+        // 聊天信息
+        $msglist = M('message')->where("status=1 and game='jnd28b'")
+            ->order("id DESC")
+            ->limit(20)
+            ->select();
+        $this->assign('msglist', $msglist);
+
+        $this->assign('is_weixin', $is_weixin);
+        $this->assign('kefu', $kefu);
+
+        $this->assign('list', $list);
+        $this->assign('type', $type);
+        $this->assign('room', 'jnd28b');
         $this->assign('options', $options);
         if (C('index_page') == '1') {
             $this->display("jnd28_1");
@@ -1649,13 +1734,17 @@ public  function ok(){
 	 public function fangjian($game)
 	{
 		$p3=rand(100,300);
+		$p4=rand(100,300);
 		$p1=rand(100,300);
 		$p2=rand(100,300);
 		$url='/home/run/'.$game;
+		$urlb='/home/run/'.$game.'b';
 		$this->assign('p1',$p1);
 		$this->assign('p2',$p2);
 		$this->assign('p3',$p3);
+		$this->assign('p4',$p4);
 		$this->assign('url',$url);
+		$this->assign('urlb',$urlb);
 		$this->display();
 	}
 }

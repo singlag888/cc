@@ -1,0 +1,1 @@
+a:4:{s:4:"time";i:1543303770;s:7:"current";a:3:{s:12:"periodNumber";s:7:"2345301";s:9:"awardTime";s:19:"2018-11-27 15:29:00";s:12:"awardNumbers";s:5:"1,1,0";}s:4:"next";a:4:{s:12:"periodNumber";i:2345302;s:9:"awardTime";s:19:"2018-11-27 15:32:25";s:17:"awardTimeInterval";i:175000;s:17:"delayTimeInterval";i:0;}s:4:"game";s:5:"jnd28";}

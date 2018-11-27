@@ -5,3 +5,10 @@ INFO: [ app_begin ] --END-- [ RunTime:0.001185s ]
 NOTIC: [8] Use of undefined constant RUNTIME_FILE - assumed 'RUNTIME_FILE' D:\Web\taobao\caipiao\www\Application\Admin\Controller\SiteController.class.php 第 187 行.
 NOTIC: [2] unlink(RUNTIME_FILE): No such file or directory D:\Web\taobao\caipiao\www\Application\Admin\Controller\SiteController.class.php 第 187 行.
 
+[ 2018-11-27T14:56:58+08:00 ] 127.0.0.1 /Admin/Site/xiazhu_jnd28b.html
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCacheBehavior [ RunTime:0.000924s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.001543s ]
+NOTIC: [8] Use of undefined constant RUNTIME_FILE - assumed 'RUNTIME_FILE' D:\Web\taobao\caipiao\www\Application\Admin\Controller\SiteController.class.php 第 194 行.
+NOTIC: [2] unlink(RUNTIME_FILE): No such file or directory D:\Web\taobao\caipiao\www\Application\Admin\Controller\SiteController.class.php 第 194 行.
+

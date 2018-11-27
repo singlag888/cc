@@ -94,6 +94,13 @@ class SiteController extends BaseController {
 			$this->display();
 		}
 	}
+    public function xiazhu_jnd28b(){
+        if(IS_POST){
+            $this -> sitesave('site.php');
+        }else{
+            $this->display();
+        }
+    }
 	
 	public function xiazhu_xjp28(){
 		if(IS_POST){

@@ -10,3 +10,9 @@ ERR: 无法加载模块:Public
 [ 2018-11-27T14:08:29+08:00 ] 127.0.0.1 /Public/Admin/css/bootstrap.min.css.map
 ERR: 无法加载模块:Public
 
+[ 2018-11-27T15:30:41+08:00 ] 127.0.0.1 /Uploads/carousel/2017-09-11/59b56b7c2ba58.JPG
+ERR: 无法加载模块:Uploads
+
+[ 2018-11-27T15:43:55+08:00 ] 127.0.0.1 /Public/Home/statics/web/js/maps/swiper.jquery.min.js.map
+ERR: 无法加载模块:Public
+

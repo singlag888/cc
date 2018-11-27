@@ -139,6 +139,25 @@ color: yellow;
 font-size: 16px;">元宝：50001-100000</div>
                 </div>
             </a>
+     <br/>
+     <a href="<?php echo ($urlb); ?>">
+         <div style="width:100%;height:200px;background: url('/public/home/img/gaoji.jpg') no-repeat;background-size:cover;position: relative;">
+             <div style="position: absolute;
+top: 85%;
+right: 5%;
+color: red;">在线人数：<?php echo ($p4); ?></div>
+             <div style="position: absolute;
+top: 82%;
+color: white;
+left: 5%;
+font-size: 20px;">高赔率房</div>
+             <div style="position: absolute;
+top: 84%;
+left: 25%;
+color: yellow;
+font-size: 16px;">元宝：50001-100000</div>
+         </div>
+     </a>
 			<?php else: ?>
 			 <a href="javascript:void(0)" onclick="haha2()">
                 <div style="width:100%;height:200px;background: url('/public/home/img/gaoji.jpg') no-repeat;background-size:cover;position: relative;">
@@ -157,7 +176,29 @@ left: 25%;
 color: yellow;
 font-size: 16px;">元宝：50001-100000</div>
                 </div>
-            </a><?php endif; ?>
+            </a>
+     <br/>
+     <a href="javascript:void(0)" onclick="haha2()">
+         <div style="width:100%;height:200px;background: url('/public/home/img/gaoji.jpg') no-repeat;background-size:cover;position: relative;">
+             <div style="position: absolute;
+top: 85%;
+right: 5%;
+color: red;">在线人数：<?php echo ($p4); ?></div>
+             <div style="position: absolute;
+top: 82%;
+color: white;
+left: 5%;
+font-size: 20px;">高赔率房</div>
+             <div style="position: absolute;
+top: 84%;
+left: 25%;
+color: yellow;
+font-size: 16px;">元宝：50001-100000</div>
+         </div>
+     </a><?php endif; ?>
+
+
+
             <?php else: ?>
             <a href="#">
                 <img src="http://wx4.sinaimg.cn/large/005FCplygy1fi727kkkzyj306e08m0rs.jpg" style="position:absolute;z-indent:99999999;width:30%;height:140px;top:25.6%;left:84%;transform:translate(-50%,-50%);">

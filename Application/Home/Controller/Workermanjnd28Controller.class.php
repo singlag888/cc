@@ -26,6 +26,7 @@ class Workermanjnd28Controller extends Server {
 		$time_interval = 1;
 		$jnd28data = json_decode($data,true);
 		$nexttime = $jnd28data['next']['delayTimeInterval']+strtotime($jnd28data['next']['awardTime']);
+
 		if($nexttime-time()>C('jnd28_stop_time') && $nexttime-time()<285){
 			F('jnd28_state',1);
 			setconfig('jnd28_state',1);
@@ -33,9 +34,12 @@ class Workermanjnd28Controller extends Server {
 			F('jnd28_state',0);
 			setconfig('jnd28_state',0);
 		}
+
+//        清楚历史数据 F('jnd28data',NULL);
 		if(!F('jnd28data')){
 			F('jnd28data',$jnd28data);
 		}
+
 		if(!F('is_send')){
 			F('is_send',1);
 		}
@@ -51,6 +55,7 @@ class Workermanjnd28Controller extends Server {
 			$next_time = $jnd28data['next']['delayTimeInterval']+strtotime($jnd28data['next']['awardTime']);
 			$awardtime = $jnd28data['current']['awardTime'];
 			// var_dump($next_time-time());
+
 			if($next_time-time()>C('jnd28_stop_time') && $next_time-time()<280){
 				F('jnd28_state',1);
 				setconfig('jnd28_state',1);
@@ -140,204 +145,406 @@ class Workermanjnd28Controller extends Server {
 
 						$set_add = M('order')->where("id={$id}")->setField(array('is_add'=>1));
 						//分类
-						switch($list[$i]['type']){
-							
-							//大小单双  大100  小100  
-							case 1:
-								$start1 = substr($list[$i]['jincai'], 0,3);
-								$starts1 = substr($list[$i]['jincai'],3);
-								$num1 = 0;
+                        if(empty($list[$i]['room'])){
+                            switch($list[$i]['type']){
 
-								if ($start1 == '大' || $start1 == '小') {
-									if ($start1 == $current_number['tema_dx']) {
-										$num1 = 1;
-									}
-								} else {
-									if ($start1 == $current_number['tema_ds']) {
-										$num1 = 1;
-									}
-								}
+                                //大小单双  大100  小100
+                                case 1:
+                                    $start1 = substr($list[$i]['jincai'], 0,3);
+                                    $starts1 = substr($list[$i]['jincai'],3);
+                                    $num1 = 0;
 
-								if($num1>0){
-									if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
-										if(C('jnd28_1314_open') == '1'){
-											$user_points = M('order')->field("sum(del_points) as sum_del")->where("userid = {$userid} and state=1  and number = {$current_number['periodnumber']}")->find();
-											if(intval($user_points['sum_del']) < intval(C('jnd28_dxds_1314zz'))){
-												$points1 = $num1*$starts1*C('jnd28_dxds_md1');
-											}else if(intval($user_points['sum_del']) >= intval(C('jnd28_dxds_1314zz')) && intval($user_points['sum_del']) < intval(C('jnd28_dxds_1314zz2'))){
-												$points1 = $num1*$starts1*C('jnd28_dxds_md2');
-											}else if(intval($user_points['sum_del']) >= intval(C('jnd28_dxds_1314zz2'))){
-												$points1 = $num1*$starts1*C('jnd28_dxds_md3');
-											}
-										}else{
-											$points1 = $num1*$starts1*C('jnd28_dxds_md');
-										}
-									} else {
-										$points1 = $num1*$starts1*C('jnd28_dxds');
-									}
-									
-									$res1 = $this->add_points($id,$userid,$points1);
-									if($res1){
-										$this->send_msg('pointsadd',$points1,$userid);
-									}
-								}
-								break;
+                                    if ($start1 == '大' || $start1 == '小') {
+                                        if ($start1 == $current_number['tema_dx']) {
+                                            $num1 = 1;
+                                        }
+                                    } else {
+                                        if ($start1 == $current_number['tema_ds']) {
+                                            $num1 = 1;
+                                        }
+                                    }
 
-							//组合  大单100  小100  
-							case 2:
-								$start2 = substr($list[$i]['jincai'], 0,6);
-								$starts2 = substr($list[$i]['jincai'],6);
-								$num2 = 0;
+                                    if($num1>0){
+                                        if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
+                                            if(C('jnd28_1314_open') == '1'){
+                                                $user_points = M('order')->field("sum(del_points) as sum_del")->where("userid = {$userid} and state=1  and number = {$current_number['periodnumber']}")->find();
+                                                if(intval($user_points['sum_del']) < intval(C('jnd28_dxds_1314zz'))){
+                                                    $points1 = $num1*$starts1*C('jnd28_dxds_md1');
+                                                }else if(intval($user_points['sum_del']) >= intval(C('jnd28_dxds_1314zz')) && intval($user_points['sum_del']) < intval(C('jnd28_dxds_1314zz2'))){
+                                                    $points1 = $num1*$starts1*C('jnd28_dxds_md2');
+                                                }else if(intval($user_points['sum_del']) >= intval(C('jnd28_dxds_1314zz2'))){
+                                                    $points1 = $num1*$starts1*C('jnd28_dxds_md3');
+                                                }
+                                            }else{
+                                                $points1 = $num1*$starts1*C('jnd28_dxds_md');
+                                            }
+                                        } else {
+                                            $points1 = $num1*$starts1*C('jnd28_dxds');
+                                        }
 
-								if ($start2 == $current_number['zuhe']) {
-									$num2 = 1;
-								}
+                                        $res1 = $this->add_points($id,$userid,$points1);
+                                        if($res1){
+                                            $this->send_msg('pointsadd',$points1,$userid);
+                                        }
+                                    }
+                                    break;
 
-								if($num2>0){
-									if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
-										$points2 = $num2*$starts2*C('jnd28_zuhe_md');
-									} else {
-										if ($start2 == '大单' || $start2 == '小双') {
-											$points2 = $num2*$starts2*C('jnd28_zuhe_1');
-										} else {
-											$points2 = $num2*$starts2*C('jnd28_zuhe_2');
-										}
-									}
-									
-									$res2 = $this->add_points($id,$userid,$points2);
-									if($res2){
-										$this->send_msg('pointsadd',$points2,$userid);
-									}
-								}
-								break;
+                                //组合  大单100  小100
+                                case 2:
+                                    $start2 = substr($list[$i]['jincai'], 0,6);
+                                    $starts2 = substr($list[$i]['jincai'],6);
+                                    $num2 = 0;
 
+                                    if ($start2 == $current_number['zuhe']) {
+                                        $num2 = 1;
+                                    }
 
-							//极大小  极大100  
-							case 3:
-								$start3 = substr($list[$i]['jincai'], 0,6);
-								$starts3 = substr($list[$i]['jincai'],6);
-								$num3 = 0;
-								if ($start3 == $current_number['jdx']) {
-									$num3 = 1;
-								}
+                                    if($num2>0){
+                                        if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
+                                            $points2 = $num2*$starts2*C('jnd28_zuhe_md');
+                                        } else {
+                                            if ($start2 == '大单' || $start2 == '小双') {
+                                                $points2 = $num2*$starts2*C('jnd28_zuhe_1');
+                                            } else {
+                                                $points2 = $num2*$starts2*C('jnd28_zuhe_2');
+                                            }
+                                        }
 
-								if($num3>0){
-									$points3 = $num3*$starts3*C('jnd28_jdx');
-									$res3 = $this->add_points($id,$userid,$points3);
-									if($res3){
-										$this->send_msg('pointsadd',$points3,$userid);
-									}
-								}
-								break;
+                                        $res2 = $this->add_points($id,$userid,$points2);
+                                        if($res2){
+                                            $this->send_msg('pointsadd',$points2,$userid);
+                                        }
+                                    }
+                                    break;
 
 
-							//庄闲和    庄100  和100
-							case 4:
-								$start4 = substr($list[$i]['jincai'], 0,3);
-								$starts4 = substr($list[$i]['jincai'],3);
+                                //极大小  极大100
+                                case 3:
+                                    $start3 = substr($list[$i]['jincai'], 0,6);
+                                    $starts3 = substr($list[$i]['jincai'],6);
+                                    $num3 = 0;
+                                    if ($start3 == $current_number['jdx']) {
+                                        $num3 = 1;
+                                    }
 
-								$num4 = 0;
-
-								if ($start4 == $current_number['zx']) {
-									$num4 = 1;
-								}
-
-								if($num4 > 0 ){
-									if ($start4 == '庄' || $start4 == '闲') {
-										if ($current_number['zx'] == '和') {
-											$points4 = $num4*$starts4*1;
-										} else {
-											$points4 = $num4*$starts4*C('jnd28_zx_1');
-										}
-									} else {
-										$points4 = $num4*$starts4*C('jnd28_zx_2');
-									}
-
-									$res4 = $this->add_points($id,$userid,$points4);
-									if($res4){
-										$this->send_msg('pointsadd',$points4,$userid);
-									}
-								}
-								break;
+                                    if($num3>0){
+                                        $points3 = $num3*$starts3*C('jnd28_jdx');
+                                        $res3 = $this->add_points($id,$userid,$points3);
+                                        if($res3){
+                                            $this->send_msg('pointsadd',$points3,$userid);
+                                        }
+                                    }
+                                    break;
 
 
-							//豹子对子顺子 100  白字100  
-							case 5:
-								$start5 = substr($list[$i]['jincai'], 0,6);
-								$starts5 = substr($list[$i]['jincai'],6);
-								$num5 = 0;
-								if ($start5 == $current_number['q3']) {
-									$num5 = 1;
-								}
+                                //庄闲和    庄100  和100
+                                case 4:
+                                    $start4 = substr($list[$i]['jincai'], 0,3);
+                                    $starts4 = substr($list[$i]['jincai'],3);
 
-								if($num5>0){
-									if ($start5 == '豹子') {
-										$points5 = $num5*$starts5*C('jnd28_bds_1');
-									} else if($start5 == '顺子') {
-										$points5 = $num5*$starts5*C('jnd28_bds_2');
-									} else if($start5 == '对子') {
-										$points5 = $num5*$starts5*C('jnd28_bds_3');
-									} else if($start5 == '半顺') {
-										$points5 = $num5*$starts5*C('jnd28_bds_4');
-									} else if($start5 == '杂六') {
-										$points5 = $num5*$starts5*C('jnd28_bds_5');
-									}
-									
-									$res5 = $this->add_points($id,$userid,$points5);
-									if($res5){
-										$this->send_msg('pointsadd',$points5,$userid);
-									}
-								}
-								break;
+                                    $num4 = 0;
+
+                                    if ($start4 == $current_number['zx']) {
+                                        $num4 = 1;
+                                    }
+
+                                    if($num4 > 0 ){
+                                        if ($start4 == '庄' || $start4 == '闲') {
+                                            if ($current_number['zx'] == '和') {
+                                                $points4 = $num4*$starts4*1;
+                                            } else {
+                                                $points4 = $num4*$starts4*C('jnd28_zx_1');
+                                            }
+                                        } else {
+                                            $points4 = $num4*$starts4*C('jnd28_zx_2');
+                                        }
+
+                                        $res4 = $this->add_points($id,$userid,$points4);
+                                        if($res4){
+                                            $this->send_msg('pointsadd',$points4,$userid);
+                                        }
+                                    }
+                                    break;
 
 
-							//特码数字 3点100  
-							case 6:
-								$start6 = explode('点', $list[$i]['jincai']);
+                                //豹子对子顺子 100  白字100
+                                case 5:
+                                    $start5 = substr($list[$i]['jincai'], 0,6);
+                                    $starts5 = substr($list[$i]['jincai'],6);
+                                    $num5 = 0;
+                                    if ($start5 == $current_number['q3']) {
+                                        $num5 = 1;
+                                    }
 
-								$num6 = 0;
-								if ($start6[0] == $current_number['tema']) {
-									$num6 = 1;
-								}
+                                    if($num5>0){
+                                        if ($start5 == '豹子') {
+                                            $points5 = $num5*$starts5*C('jnd28_bds_1');
+                                        } else if($start5 == '顺子') {
+                                            $points5 = $num5*$starts5*C('jnd28_bds_2');
+                                        } else if($start5 == '对子') {
+                                            $points5 = $num5*$starts5*C('jnd28_bds_3');
+                                        } else if($start5 == '半顺') {
+                                            $points5 = $num5*$starts5*C('jnd28_bds_4');
+                                        } else if($start5 == '杂六') {
+                                            $points5 = $num5*$starts5*C('jnd28_bds_5');
+                                        }
 
-								if($num6>0){
-									if ($start6[0] == '0' || $start6[0] == '27') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_0');
-									} else if($start6[0] == '1' || $start6[0] == '26') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_1');
-									} else if($start6[0] == '2' || $start6[0] == '25') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_2');
-									} else if($start6[0] == '3' || $start6[0] == '24') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_3');
-									} else if($start6[0] == '4' || $start6[0] == '23') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_4');
-									} else if($start6[0] == '5' || $start6[0] == '22') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_5');
-									} else if($start6[0] == '6' || $start6[0] == '21') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_6');
-									} else if($start6[0] == '7' || $start6[0] == '20') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_7');
-									} else if($start6[0] == '8' || $start6[0] == '19') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_8');
-									} else if($start6[0] == '9' || $start6[0] == '18') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_9');
-									} else if($start6[0] == '10' || $start6[0] == '17') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_10');
-									} else if($start6[0] == '11' || $start6[0] == '16') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_11');
-									} else if($start6[0] == '12' || $start6[0] == '15') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_12');
-									} else if($start6[0] == '13' || $start6[0] == '14') {
-										$points6 = $num6*$start6[1]*C('jnd28_tema_13');
-									}	
+                                        $res5 = $this->add_points($id,$userid,$points5);
+                                        if($res5){
+                                            $this->send_msg('pointsadd',$points5,$userid);
+                                        }
+                                    }
+                                    break;
 
-									$res6 = $this->add_points($id,$userid,$points6);
-									if($res6){
-										$this->send_msg('pointsadd',$points6,$userid);
-									}
-								}
-								break;					
-						}
+
+                                //特码数字 3点100
+                                case 6:
+                                    $start6 = explode('点', $list[$i]['jincai']);
+
+                                    $num6 = 0;
+                                    if ($start6[0] == $current_number['tema']) {
+                                        $num6 = 1;
+                                    }
+
+                                    if($num6>0){
+                                        if ($start6[0] == '0' || $start6[0] == '27') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_0');
+                                        } else if($start6[0] == '1' || $start6[0] == '26') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_1');
+                                        } else if($start6[0] == '2' || $start6[0] == '25') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_2');
+                                        } else if($start6[0] == '3' || $start6[0] == '24') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_3');
+                                        } else if($start6[0] == '4' || $start6[0] == '23') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_4');
+                                        } else if($start6[0] == '5' || $start6[0] == '22') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_5');
+                                        } else if($start6[0] == '6' || $start6[0] == '21') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_6');
+                                        } else if($start6[0] == '7' || $start6[0] == '20') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_7');
+                                        } else if($start6[0] == '8' || $start6[0] == '19') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_8');
+                                        } else if($start6[0] == '9' || $start6[0] == '18') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_9');
+                                        } else if($start6[0] == '10' || $start6[0] == '17') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_10');
+                                        } else if($start6[0] == '11' || $start6[0] == '16') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_11');
+                                        } else if($start6[0] == '12' || $start6[0] == '15') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_12');
+                                        } else if($start6[0] == '13' || $start6[0] == '14') {
+                                            $points6 = $num6*$start6[1]*C('jnd28_tema_13');
+                                        }
+
+                                        $res6 = $this->add_points($id,$userid,$points6);
+                                        if($res6){
+                                            $this->send_msg('pointsadd',$points6,$userid);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }else{
+                            switch($list[$i]['type']){
+
+                                //大小单双  大100  小100
+                                case 1:
+                                    $start1 = substr($list[$i]['jincai'], 0,3);
+                                    $starts1 = substr($list[$i]['jincai'],3);
+                                    $num1 = 0;
+
+                                    if ($start1 == '大' || $start1 == '小') {
+                                        if ($start1 == $current_number['tema_dx']) {
+                                            $num1 = 1;
+                                        }
+                                    } else {
+                                        if ($start1 == $current_number['tema_ds']) {
+                                            $num1 = 1;
+                                        }
+                                    }
+
+                                    if($num1>0){
+                                        if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
+                                            if(C('jnd28b_1314_open') == '1'){
+                                                $user_points = M('order')->field("sum(del_points) as sum_del")->where("userid = {$userid} and state=1  and number = {$current_number['periodnumber']}")->find();
+                                                if(intval($user_points['sum_del']) < intval(C('jnd28b_dxds_1314zz'))){
+                                                    $points1 = $num1*$starts1*C('jnd28b_dxds_md1');
+                                                }else if(intval($user_points['sum_del']) >= intval(C('jnd28b_dxds_1314zz')) && intval($user_points['sum_del']) < intval(C('jnd28b_dxds_1314zz2'))){
+                                                    $points1 = $num1*$starts1*C('jnd28b_dxds_md2');
+                                                }else if(intval($user_points['sum_del']) >= intval(C('jnd28b_dxds_1314zz2'))){
+                                                    $points1 = $num1*$starts1*C('jnd28b_dxds_md3');
+                                                }
+                                            }else{
+                                                $points1 = $num1*$starts1*C('jnd28b_dxds_md');
+                                            }
+                                        } else {
+                                            $points1 = $num1*$starts1*C('jnd28b_dxds');
+                                        }
+
+                                        $res1 = $this->add_points($id,$userid,$points1);
+                                        if($res1){
+                                            $this->send_msg('pointsadd',$points1,$userid);
+                                        }
+                                    }
+                                    break;
+
+                                //组合  大单100  小100
+                                case 2:
+                                    $start2 = substr($list[$i]['jincai'], 0,6);
+                                    $starts2 = substr($list[$i]['jincai'],6);
+                                    $num2 = 0;
+
+                                    if ($start2 == $current_number['zuhe']) {
+                                        $num2 = 1;
+                                    }
+
+                                    if($num2>0){
+                                        if ($current_number['tema'] == '13' || $current_number['tema'] == '14') {
+                                            $points2 = $num2*$starts2*C('jnd28b_zuhe_md');
+                                        } else {
+                                            if ($start2 == '大单' || $start2 == '小双') {
+                                                $points2 = $num2*$starts2*C('jnd28b_zuhe_1');
+                                            } else {
+                                                $points2 = $num2*$starts2*C('jnd28b_zuhe_2');
+                                            }
+                                        }
+
+                                        $res2 = $this->add_points($id,$userid,$points2);
+                                        if($res2){
+                                            $this->send_msg('pointsadd',$points2,$userid);
+                                        }
+                                    }
+                                    break;
+
+
+                                //极大小  极大100
+                                case 3:
+                                    $start3 = substr($list[$i]['jincai'], 0,6);
+                                    $starts3 = substr($list[$i]['jincai'],6);
+                                    $num3 = 0;
+                                    if ($start3 == $current_number['jdx']) {
+                                        $num3 = 1;
+                                    }
+
+                                    if($num3>0){
+                                        $points3 = $num3*$starts3*C('jnd28b_jdx');
+                                        $res3 = $this->add_points($id,$userid,$points3);
+                                        if($res3){
+                                            $this->send_msg('pointsadd',$points3,$userid);
+                                        }
+                                    }
+                                    break;
+
+
+                                //庄闲和    庄100  和100
+                                case 4:
+                                    $start4 = substr($list[$i]['jincai'], 0,3);
+                                    $starts4 = substr($list[$i]['jincai'],3);
+
+                                    $num4 = 0;
+
+                                    if ($start4 == $current_number['zx']) {
+                                        $num4 = 1;
+                                    }
+
+                                    if($num4 > 0 ){
+                                        if ($start4 == '庄' || $start4 == '闲') {
+                                            if ($current_number['zx'] == '和') {
+                                                $points4 = $num4*$starts4*1;
+                                            } else {
+                                                $points4 = $num4*$starts4*C('jnd28b_zx_1');
+                                            }
+                                        } else {
+                                            $points4 = $num4*$starts4*C('jnd28b_zx_2');
+                                        }
+
+                                        $res4 = $this->add_points($id,$userid,$points4);
+                                        if($res4){
+                                            $this->send_msg('pointsadd',$points4,$userid);
+                                        }
+                                    }
+                                    break;
+
+
+                                //豹子对子顺子 100  白字100
+                                case 5:
+                                    $start5 = substr($list[$i]['jincai'], 0,6);
+                                    $starts5 = substr($list[$i]['jincai'],6);
+                                    $num5 = 0;
+                                    if ($start5 == $current_number['q3']) {
+                                        $num5 = 1;
+                                    }
+
+                                    if($num5>0){
+                                        if ($start5 == '豹子') {
+                                            $points5 = $num5*$starts5*C('jnd28b_bds_1');
+                                        } else if($start5 == '顺子') {
+                                            $points5 = $num5*$starts5*C('jnd28b_bds_2');
+                                        } else if($start5 == '对子') {
+                                            $points5 = $num5*$starts5*C('jnd28b_bds_3');
+                                        } else if($start5 == '半顺') {
+                                            $points5 = $num5*$starts5*C('jnd28b_bds_4');
+                                        } else if($start5 == '杂六') {
+                                            $points5 = $num5*$starts5*C('jnd28b_bds_5');
+                                        }
+
+                                        $res5 = $this->add_points($id,$userid,$points5);
+                                        if($res5){
+                                            $this->send_msg('pointsadd',$points5,$userid);
+                                        }
+                                    }
+                                    break;
+
+
+                                //特码数字 3点100
+                                case 6:
+                                    $start6 = explode('点', $list[$i]['jincai']);
+
+                                    $num6 = 0;
+                                    if ($start6[0] == $current_number['tema']) {
+                                        $num6 = 1;
+                                    }
+
+                                    if($num6>0){
+                                        if ($start6[0] == '0' || $start6[0] == '27') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_0');
+                                        } else if($start6[0] == '1' || $start6[0] == '26') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_1');
+                                        } else if($start6[0] == '2' || $start6[0] == '25') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_2');
+                                        } else if($start6[0] == '3' || $start6[0] == '24') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_3');
+                                        } else if($start6[0] == '4' || $start6[0] == '23') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_4');
+                                        } else if($start6[0] == '5' || $start6[0] == '22') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_5');
+                                        } else if($start6[0] == '6' || $start6[0] == '21') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_6');
+                                        } else if($start6[0] == '7' || $start6[0] == '20') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_7');
+                                        } else if($start6[0] == '8' || $start6[0] == '19') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_8');
+                                        } else if($start6[0] == '9' || $start6[0] == '18') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_9');
+                                        } else if($start6[0] == '10' || $start6[0] == '17') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_10');
+                                        } else if($start6[0] == '11' || $start6[0] == '16') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_11');
+                                        } else if($start6[0] == '12' || $start6[0] == '15') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_12');
+                                        } else if($start6[0] == '13' || $start6[0] == '14') {
+                                            $points6 = $num6*$start6[1]*C('jnd28b_tema_13');
+                                        }
+
+                                        $res6 = $this->add_points($id,$userid,$points6);
+                                        if($res6){
+                                            $this->send_msg('pointsadd',$points6,$userid);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+
 					}
 				}
 				
@@ -513,7 +720,8 @@ class Workermanjnd28Controller extends Server {
 			case 'login' :
 				// 把昵称放到session中
 				$client_name = htmlspecialchars($message_data['client_name']);
-				
+                //房间号
+                $connection->room = htmlspecialchars($message_data['room']);
 				/* 保存uid到connection的映射，这样可以方便的通过uid查找connection，
 		        * 实现针对特定uid推送数据
 		        */
@@ -546,6 +754,7 @@ class Workermanjnd28Controller extends Server {
 					);
 					$connection -> send(json_encode($time_error_message));
 					$time_error_message['type'] = 'say_error'; 
+					$time_error_message['room'] = $connection->room;
 					$this->add_message($time_error_message);/*添加信息*/
 					
 					$time_message = array(
@@ -558,7 +767,8 @@ class Workermanjnd28Controller extends Server {
 					);
 					$connection -> send(json_encode($time_message));
 					$time_message['type'] = 'error';
-					$this->add_message($time_message);/*添加信息*/
+                    $time_message['room'] = $connection->room;
+                    $this->add_message($time_message);/*添加信息*/
 				}else{
 					$time = time();
 					if ($time > strtotime("23:55:30")) {
@@ -573,6 +783,8 @@ class Workermanjnd28Controller extends Server {
 						);
 						$connection -> send(json_encode($new_message));
 						$new_message['type'] = 'error';
+						$new_message['room'] = $connection->room;
+
 						$this->add_message($new_message);/*添加信息*/
 						break;
 					} 
@@ -590,6 +802,7 @@ class Workermanjnd28Controller extends Server {
 						);
 						$connection -> send(json_encode($error_message));
 						$error_message['type'] = 'say_error';
+						$error_message['room'] = $connection->room;
 						$this->add_message($error_message);/*添加信息*/
 						
 						if ($res['error'] == 0) {
@@ -608,6 +821,7 @@ class Workermanjnd28Controller extends Server {
 						);
 						$connection -> send(json_encode($new_message));
 						$new_message['type'] = 'error';
+						$new_message['room'] = $connection->room;
 						$this->add_message($new_message);/*添加信息*/
 					}else if($res['type']){
 						/*查询积分*/
@@ -623,6 +837,7 @@ class Workermanjnd28Controller extends Server {
 							);
 							$connection -> send(json_encode($points_error));
 							$points_error['type'] = 'say_error';
+							$points_error['room'] = $connection->room;
 							$this->add_message($points_error);/*添加信息*/
 							
 							$points_tips = array(
@@ -635,6 +850,7 @@ class Workermanjnd28Controller extends Server {
 							);
 							$connection -> send(json_encode($points_tips));
 							$points_tips['type'] = 'error';
+                            $points_tips['room'] = $connection->room;
 							$this->add_message($points_tips);/*添加信息*/
 						}else{
 							$jnd28data = F('jnd28data');
@@ -685,6 +901,7 @@ class Workermanjnd28Controller extends Server {
 								);
 								$connection -> send(json_encode($points_tips));
 								$points_tips['type'] = 'error';
+                                $points_tips['room'] = $connection->room;
 								$this->add_message($points_tips);/*添加信息*/
 								break;
 							}
@@ -703,6 +920,7 @@ class Workermanjnd28Controller extends Server {
 								);
 								$connection -> send(json_encode($points_tips));
 								$points_tips['type'] = 'error';
+                                $points_tips['room'] = $connection->room;
 								$this->add_message($points_tips);/*添加信息*/
 								break;
 							}
@@ -721,7 +939,7 @@ class Workermanjnd28Controller extends Server {
 							$map['username'] = $user['username'];
 							$map['game'] = F('game');
 							$map['t_id'] = $user['t_id'];
-						
+                            $map['room'] =  $connection->room;
 							/*添加竞猜*/
 							if ($user['is_robot']) {
 								$return = true;
@@ -751,7 +969,8 @@ class Workermanjnd28Controller extends Server {
 									'head_img_url'=> $message_data['headimgurl'],
 									'from_client_name' => $message_data['client_name'],
 									'content' => $message_data['content'], 
-									'time' => date('H:i:s')
+									'time' => date('H:i:s'),
+                                    'room' => $connection->room
 								);
 								if ($map['is_under']) {
 									foreach ($this->worker->uidConnections as $con) {
@@ -772,6 +991,7 @@ class Workermanjnd28Controller extends Server {
 									);
 									$connection -> send(json_encode($new_message1));
 									$new_message1['type'] = 'error';
+                                    $new_message1['room'] = $connection->room;
 									$this->add_message($new_message1);/*添加信息*/
 								}
 							}
@@ -822,6 +1042,7 @@ class Workermanjnd28Controller extends Server {
 							);
 							$connection -> send(json_encode($format_error_message));
 							$format_error_message['type'] = 'say_error';
+                            $format_error_message['room'] = $connection->room;
 							$this->add_message($format_error_message);/*添加信息*/
 							
 							$new_message3 = array(
@@ -834,6 +1055,7 @@ class Workermanjnd28Controller extends Server {
 							);
 							$connection -> send(json_encode($new_message3));
 							$new_message3['type'] = 'error';
+                            $new_message3['room'] = $connection->room;
 							$this->add_message($new_message3);/*添加信息*/
 						}
 						
@@ -857,6 +1079,7 @@ class Workermanjnd28Controller extends Server {
 						foreach ($this->worker->uidConnections as $con) {
 							$con -> send(json_encode($new_message));
 						}
+                        $new_message['room'] = $connection->room;
 						$this->add_message($new_message);
 					}
 			}
@@ -916,7 +1139,8 @@ class Workermanjnd28Controller extends Server {
 	protected function add_message($new_message){
 
 		if (!empty($new_message)) {
-			$new_message['game'] = 'jnd28';
+//			$new_message['game'] = 'jnd28';
+            $new_message['game'] =empty($new_message['room'])?'jnd28':$new_message['room'];
 			$res = M('message')->add($new_message);
 			return $res;
 		}

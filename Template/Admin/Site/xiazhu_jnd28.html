@@ -51,14 +51,14 @@
 								    <div class="col-sm-4">
 										<input type="text" name="jnd28_dxds" value="{:C('jnd28_dxds')}" placeholder="输入赔率" class="form-control">
 									</div>
-									<div class="col-sm-2"> 
+									<div class="col-sm-2">
 										<input type="radio" value="1" <if condition="C('jnd28_xz_open')['dxds'] eq 1">checked</if> class="i-checks" name="jnd28_xz_open[dxds]">开启&nbsp;&nbsp;
 										<input type="radio" value="0" <if condition="C('jnd28_xz_open')['dxds'] eq 0">checked</if> class="i-checks" name="jnd28_xz_open[dxds]">关闭
 									</div>
 									<div class="col-sm-2">
 										<input type="text" name="jnd28_xz_max[dxds]" value="{:C('jnd28_xz_max')['dxds']}" placeholder="当前玩法每期最高点数" class="form-control">
 									</div>
-								</div> 
+								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">特码大小单双(开13.14赔率)选择</label>
 									<div class="col-sm-4">
@@ -80,21 +80,21 @@
 								    <div class="col-sm-3">
 										<input type="text" name="jnd28_dxds_md1" value="{:C('jnd28_dxds_md1')}" placeholder="输入赔率" class="form-control">
 									</div>
-								</div> 
+								</div>
 								<div class="form-group 1314_open_2" <if condition="C('jnd28_1314_open') eq 0">style="display:none"</if>>
 									<label class="col-sm-2 control-label">总注>={:C('jnd28_dxds_1314zz')} 总注<</label>
 								    <div class="col-sm-2"><input type="text" name="jnd28_dxds_1314zz2" value="{:C('jnd28_dxds_1314zz2')}" placeholder="输入总注" class="form-control"></div>
 									<div class="col-sm-3">
 										<input type="text" name="jnd28_dxds_md2" value="{:C('jnd28_dxds_md2')}" placeholder="输入赔率" class="form-control">
 									</div>
-								</div> 
+								</div>
 								<div class="form-group 1314_open_2" <if condition="C('jnd28_1314_open') eq 0">style="display:none"</if>>
 									<label class="col-sm-2 control-label">总注>={:C('jnd28_dxds_1314zz2')}</label>
 								    <div class="col-sm-3">
 										<input type="text" name="jnd28_dxds_md3" value="{:C('jnd28_dxds_md3')}" placeholder="输入赔率" class="form-control">
 									</div>
-								</div> 
-								
+								</div>
+
 								<div class="hr-line-dashed"></div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">特码猜组合(大单,小双)</label>
@@ -135,9 +135,9 @@
 										<input type="text" name="jnd28_xz_max[jdx]" value="{:C('jnd28_xz_max')['jdx']}" placeholder="当前玩法每期最高点数" class="form-control">
 									</div>
 								</div>
-								
+
 								<div class="hr-line-dashed"></div>
-								
+
 								<div class="form-group">
 									<label class="col-sm-2 control-label">猜庄闲和(庄闲)</label>
 								    <div class="col-sm-4">
@@ -215,7 +215,7 @@
 										<input type="text" name="jnd28_tema_1" value="{:C('jnd28_tema_1')}" placeholder="输入赔率" class="form-control">
 									</div>
 								</div>
-							
+
 								<div class="form-group">
 									<label class="col-sm-2 control-label">数字2,25</label>
 								    <div class="col-sm-4">
@@ -302,7 +302,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<script src="__PUBLIC__/Admin/js/jquery.min.js?v=2.1.4"></script>
 		<script src="__PUBLIC__/Admin/js/bootstrap.min.js?v=3.3.6"></script>
 		<script src="__PUBLIC__/Admin/js/content.min.js?v=1.0.0"></script>
@@ -319,7 +319,7 @@
 					$('.1314_open_2').show();
 				}
 			});
-			
+
 			$(document).ready(function() {
 				$(".i-checks").iCheck({
 					checkboxClass: "icheckbox_square-green",
@@ -330,7 +330,7 @@
 		<script>
 			$(function(){
 				$('#signform').ajaxForm({
-					success: complete, 
+					success: complete,
 					dataType: 'json'
 				});
 				function complete(data){
@@ -342,7 +342,7 @@
 						});
 					}else{
 						layer.msg(data.info);
-						return false;	
+						return false;
 					}
 				}
 			});

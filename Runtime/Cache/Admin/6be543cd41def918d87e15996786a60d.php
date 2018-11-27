@@ -101,10 +101,13 @@
 									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_bj28');?>">pc蛋蛋北京28下注配置</a>
 								</li>
 								<li>
-									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_bj28b');?>">pc蛋蛋北京28 超级 下注配置</a>
+									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_bj28b');?>">pc蛋蛋北京28 高赔率下注配置</a>
 								</li>
 								<li>
 									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_jnd28');?>">pc蛋蛋加拿大28下注配置</a>
+								</li>
+								<li>
+									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_jnd28b');?>">pc蛋蛋加拿大28高赔率下注配置</a>
 								</li>
 								<li>
 									<a class="J_menuItem" href="<?php echo U('Admin/Site/xiazhu_xjp28');?>">pc蛋蛋新加坡28下注配置</a>
