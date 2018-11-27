@@ -1,0 +1,29 @@
+程序运营PHP版本>PHP5.3  配置PHP5.5环境变量  我建议你们用护卫神集成环境搭建！这套毋庸置疑完美运营无任何BUG！旭日整理发布禁止做违法运营！
+1.导入数据库文件
+2.配置数据库链接文件.\Application\Common\Conf\db.php
+3.前台测试账号密码均为123456  后台测试账号admin 密码admin888
+4.可以到www.apicp.cn购买采集接口，采集接口配置文件...\Application\Home\Controller\ApiController.class.php 打开根目录run1.bat采集文件
+
+
+
+
+新买的连接
+
+北京赛车
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/BJPK10/format/xml/num/5/
+
+幸运飞艇
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/MLAFT/format/xml/num/5/
+
+重庆时时彩
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/CQSSC/format/xml/num/5/
+
+PC蛋蛋
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/PCDD/format/xml/num/5/
+
+香港六和
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/HK6/format/xml/num/5/
+
+加拿大28
+http://api.apicp.cn/Home/Lottery/index/token/5579a64330b1a0d126c4ad0d1bf89f77/code/JND28/format/xml/num/5/
+
